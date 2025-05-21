@@ -27,33 +27,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Azure Login
-        uses: azure/login@v1
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Create or Update Web App
-        run: |
-          # Nur erstellen, wenn noch nicht vorhanden
-          if ! az webapp show \
-               --resource-group SKCLAR-PAILER \
-               --name presentationtest \
-             >/dev/null 2>&1; then
-            az webapp create \
-              --resource-group SKCLAR-PAILER \
-              --plan ASP-SKCLARPAILER-bd4f \
-              --name presentationtest \
-              --deployment-container-image-name presentationog3.azurecr.io/mein-app:latest
-          fi
-
-          # Immer das neue Image setzen
-          az webapp config container set \
-            --resource-group SKCLAR-PAILER \
-            --name presentationtest \
-            --docker-custom-image-name presentationog3.azurecr.io/mein-app:latest
-
-          # Port-Mapping konfigurieren
-          az webapp config appsettings set \
-            --resource-group SKCLAR-PAILER \
-            --name presentationtest \
-            --settings WEBSITES_PORT=5000
+          app-name: presentationtest
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: |
+            presentationog3.azurecr.io/mein-app:latest
