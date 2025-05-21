@@ -40,3 +40,8 @@ jobs:
             --name presentationtest \
             --deployment-container-image-name presentationog3.azurecr.io/mein-app:latest \
             --force-update
+
+          az webapp config appsettings set \
+            --resource-group SKCLAR-PAILER \
+            --name presentationtest \
+            --settings WEBSITES_PORT=5000
