@@ -17,9 +17,9 @@ jobs:
 
       - name: Build und Push Docker-Image
         run: |
-          az acr login --name PresentationOG3
-          docker build -t PresentationOG3.azurecr.io/mein-app:latest .
-          docker push PresentationOG3.azurecr.io/mein-app:latest
+          az acr login --name presentationog3
+          docker build -t presentationog3.azurecr.io/mein-app:latest .
+          docker push presentationog3.azurecr.io/mein-app:latest
 
   deploy:
     needs: build-and-push
@@ -32,10 +32,16 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy zu Web App for Containers
+      - name: Deploy oder Update Web App
         run: |
           az webapp create \
-            -g SKCLAR-PAILER \
-            -p ASP-SKCLARPAILER-bd4f \
-            -n presentationtest \
-            --deployment-container-image-name PresentationOG3.azurecr.io/mein-app:latest
+            --resource-group SKCLAR-PAILER \
+            --plan ASP-SKCLARPAILER-bd4f \
+            --name presentationtest \
+            --deployment-container-image-name presentationog3.azurecr.io/mein-app:latest \
+            --force-update
+
+          az webapp config appsettings set \
+            --resource-group SKCLAR-PAILER \
+            --name presentationtest \
+            --settings WEBSITES_PORT=5000
