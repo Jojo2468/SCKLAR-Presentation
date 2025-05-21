@@ -1,0 +1,41 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login bei ACR
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build und Push Docker-Image
+        run: |
+          az acr login --name PresentationOG3
+          docker build -t PresentationOG3.azurecr.io/mein-app:latest .
+          docker push PresentationOG3.azurecr.io/mein-app:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy zu Web App for Containers
+        run: |
+          az webapp create \
+            -g SKCLAR-PAILER \
+            -p ASP-SKCLARPAILER-bd4f \
+            -n presentationtest \
+            --deployment-container-image-name PresentationOG3.azurecr.io/mein-app:latest
