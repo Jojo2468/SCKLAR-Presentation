@@ -27,6 +27,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Port 5000 freigeben
+        run: |
+          az webapp config appsettings set \
+            --resource-group SKCLAR-PAILER \
+            --name presentationtest \
+            --settings WEBSITES_PORT=5000
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
