@@ -32,10 +32,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy zu Web App for Containers
+      - name: Deploy oder Update Web App
         run: |
           az webapp create \
-            -g SKCLAR-PAILER \
-            -p ASP-SKCLARPAILER-bd4f \
-            -n presentationtest \
-            --deployment-container-image-name PresentationOG3.azurecr.io/mein-app:latest
+            --resource-group SKCLAR-PAILER \
+            --plan ASP-SKCLARPAILER-bd4f \
+            --name presentationtest \
+            --deployment-container-image-name PresentationOG3.azurecr.io/mein-app:latest \
+            --force-update
