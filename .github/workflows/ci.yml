@@ -32,15 +32,27 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy oder Update Web App
+      - name: Create or Update Web App
         run: |
-          az webapp create \
-            --resource-group SKCLAR-PAILER \
-            --plan ASP-SKCLARPAILER-bd4f \
-            --name presentationtest \
-            --deployment-container-image-name presentationog3.azurecr.io/mein-app:latest \
-            --force-update
+          # Nur erstellen, wenn noch nicht vorhanden
+          if ! az webapp show \
+               --resource-group SKCLAR-PAILER \
+               --name presentationtest \
+             >/dev/null 2>&1; then
+            az webapp create \
+              --resource-group SKCLAR-PAILER \
+              --plan ASP-SKCLARPAILER-bd4f \
+              --name presentationtest \
+              --deployment-container-image-name presentationog3.azurecr.io/mein-app:latest
+          fi
 
+          # Immer das neue Image setzen
+          az webapp config container set \
+            --resource-group SKCLAR-PAILER \
+            --name presentationtest \
+            --docker-custom-image-name presentationog3.azurecr.io/mein-app:latest
+
+          # Port-Mapping konfigurieren
           az webapp config appsettings set \
             --resource-group SKCLAR-PAILER \
             --name presentationtest \
