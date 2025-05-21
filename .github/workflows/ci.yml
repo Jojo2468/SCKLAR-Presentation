@@ -8,7 +8,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      
+      - uses: actions/checkout@v3
 
       - name: Login bei ACR
         uses: azure/login@v1
@@ -26,19 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
-
-      - name: Port 5000 freigeben
-        run: |
-          az webapp config appsettings set \
-            --resource-group SKCLAR-PAILER \
-            --name presentationtest \
-            --settings WEBSITES_PORT=5000
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
