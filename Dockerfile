@@ -1,14 +1,15 @@
+# Base image mit Python
 FROM python:3.11-slim
 
+# Arbeitsverzeichnis setzen
 WORKDIR /app
 
-# Abhängigkeiten installieren
+# Dependencies kopieren und installieren
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# gesamten Quellcode kopieren
+# App-Dateien kopieren
 COPY . .
 
-# Default-Command
+# Flask App starten
 CMD ["python", "app.py"]
-#
